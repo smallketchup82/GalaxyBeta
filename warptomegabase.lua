@@ -9,7 +9,9 @@ if not YourMiner or not ship then print("Please spawn a ship!") return end
 local shippoint = workspace.Ships:FindFirstChild(tostring(YourTeam)):FindFirstChild(tostring(YourMiner)).CenterPoint
 local basepoint = game.workspace.Bases:FindFirstChild("Mega Base").Model.CenterPoint
 
-ship.Configuration.NoWarp.Value = false
+if ship.Configuration:FindFirstChild("NoWarp") then
+   ship.Configuration.NoWarp.Value = false 
+end
 
 local args = {
     [1] = "Teleport",
