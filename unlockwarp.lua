@@ -6,8 +6,8 @@ local ship = game.Workspace.Ships:FindFirstChild(tostring(YourTeam)):FindFirstCh
 if ship.Configuration:FindFirstChild("NoWarp") ~= null then
     ship.Configuration.NoWarp.Value = false
     
-    local humanoid = charcater.humanoid
+    local humanoid = character.humanoid
     humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    
+
     print("Unlocked Warping")
 end
