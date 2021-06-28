@@ -1,3 +1,4 @@
+-- WARNING: DO NOT USE THIS SCRIPT ITS CURRENTLY EXPERIMENTAL
 local YourTeam = game.Players.LocalPlayer.Team
 local YourMiner = game.Players.LocalPlayer.ActiveShip.Value
 
