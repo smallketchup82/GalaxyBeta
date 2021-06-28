@@ -177,6 +177,7 @@ enabled.Activated:Connect(function()
 			if not i:IsA("BoolValue") then continue end
 			if i.Name ~= "Miner" then continue end
 			local ShipTurret = i.Parent
+			ShipTurret.ReloadTime.Value = 0.1
 			spawn(function()
 				while currentenabled do
 					if not YourMiner then
