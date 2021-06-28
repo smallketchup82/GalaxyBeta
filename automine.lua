@@ -214,7 +214,6 @@ enabled.Activated:Connect(function()
 			end)
 		end
 	else
-	    enabled.Text = "✖"
-		currentenabled = false
+		disableautomine()
 	end
 end)
