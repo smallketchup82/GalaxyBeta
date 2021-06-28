@@ -156,11 +156,20 @@ minimize.Activated:Connect(function()
     end
 end)
 
+local function disableautomine()
+	enabled.Text = "✖"
+	currentenabled = false
+end
+
+local function enableautomine()
+	enabled.Text = "✓"
+	currentenabled = true
+end
+
 
 enabled.Activated:Connect(function()
 	if currentenabled == false then 
-		enabled.Text = "✓"
-		currentenabled = true
+		enableautomine()
 
 		local YourTeam = game.Players.LocalPlayer.Team
 		local YourMiner = game.Players.LocalPlayer.ActiveShip.Value
@@ -171,8 +180,8 @@ enabled.Activated:Connect(function()
 			spawn(function()
 				while currentenabled do
 					if not YourMiner then
-				        enabled.Text = "✖"
-                        currentenabled = false
+						disableautomine()
+						print("No miner currently spawned!")
                         break
 					end
 
@@ -189,7 +198,17 @@ enabled.Activated:Connect(function()
 						end))
 					end
 					wait(3)
-					workspace.Bases:FindFirstChild("Mega Base").Model.DumpOre:InvokeServer()
+
+					local dockedat = game.workspace.Ships:FindFirstChild(tostring(YourTeam)):FindFirstChild(tostring(YourMiner)).DockedAt.Value
+					local dockedbase = dockedat.Parent.Parent.Name
+
+					if workspace.Bases:FindFirstChild(dockedbase):FindFirstChild("Model") ~= nil then
+						workspace.Bases:FindFirstChild(dockedbase).Model.DumpOre:InvokeServer()
+					elseif workspace.Bases:FindFirstChild(dockedbase):FindFirstChild("Starbase") then
+						workspace.Bases:FindFirstChild(dockedbase).Starbase.DumpOre:InvokeServer()
+					else 
+						print("Error! Cannot find a starbase to dump at. Please dock at either Mega Base or a Starbase")
+					end
 				end
 			end)
 		end
