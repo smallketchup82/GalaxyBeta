@@ -10,7 +10,7 @@ local teleportpage = MenuUI.AddPage("Teleports", false)
 local miscpage = MenuUI.Addpage("Misc", true)
 
 -- farming page
-farmingpage.AddLabel("Automine")
+local autominesection = farmingpage.AddLabel("Automine")
 
 local currentenabled = false
 
@@ -88,7 +88,7 @@ local instructions = farmingpage.AddLabel("Make sure you are docked at Mega Base
 -- progression page
 
 local abortedwarehouselvls = false
-progressionpage.AddButton("Unlock All Warehouse Levels (You need a lot of money)", function(value)
+local unlockwarehousebtn = progressionpage.AddButton("Unlock All Warehouse Levels (You need a lot of money)", function(value)
     local warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
 
     while wait() do
@@ -106,7 +106,7 @@ progressionpage.AddButton("Unlock All Warehouse Levels (You need a lot of money)
     end
 end)
 
-progressionpage.AddButton("Abort unlocking all Warehouse Levels", function(value)    
+local abortwarehousebtn = progressionpage.AddButton("Abort unlocking all Warehouse Levels", function(value)    
     abortedwarehouselvls = true
 end)
 
