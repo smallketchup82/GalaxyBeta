@@ -4,6 +4,9 @@ local MainUI = UILibrary.Load("Official Roblox Galaxy Automine")
 local mainpage = MainUI.AddPage("Main", false)
 
 local currentenabled = false
+
+local ore = "Silicate Ore"
+
 local autominetoggle = mainpage.AddToggle("Enable Automine", false, function(value)
 
 	if currentenabled == false and value == true then
@@ -30,8 +33,8 @@ local autominetoggle = mainpage.AddToggle("Enable Automine", false, function(val
 								[1] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0.031546838581562, 0.82163470983505, -0.56914073228836)),
 								[2] = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(0.56289011240005, -0.021682156249881, 0.82624727487564)),
 								[3] = 1144.869140625,
-								[4] = workspace.Asteroids:FindFirstChild("Silicate Ore"),
-								[5] = workspace.Asteroids:FindFirstChild("Silicate Ore").CenterPoint
+								[4] = workspace.Asteroids:FindFirstChild(ore),
+								[5] = workspace.Asteroids:FindFirstChild(ore).CenterPoint
 							}
 							ShipTurret.RemoteFireCommand:InvokeServer(unpack(args))
 						end))
@@ -56,3 +59,17 @@ local autominetoggle = mainpage.AddToggle("Enable Automine", false, function(val
 		currentenabled = false
 	end
 end)
+
+local oredropdown = mainpage.AddDropdown("Ore", {
+	"Silicate Ore",
+	"Carbon Ore",
+	"Iridium Ore",
+	"Adamantite Ore",
+	"Palladium Ore",
+	"Titanium Ore",
+	"Quantium Ore"
+}, function(value)
+ore = tostring(value)
+end)
+
+local instructions = mainpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake sure you have a miner out")
