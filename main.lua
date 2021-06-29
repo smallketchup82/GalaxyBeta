@@ -91,7 +91,7 @@ local abortedwarehouselvls = false
 progressionpage.AddButton("Unlock All Warehouse Levels (You need a lot of money)", function(value)
     local warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
 
-    while wait() then
+    while wait() do
         warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
         if abortedwarehouselvls == true then print("Aborted buying all warehouses") break end
 
