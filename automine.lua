@@ -1,6 +1,6 @@
 local UILibrary = loadstring(game:HttpGet("https://pastebin.com/raw/V1ca2q9s"))()
 
-local MainUI = UILibrary.Load("Official Roblox Galaxy Automine")
+local MainUI = UILibrary.Load("Official Roblox Galaxy Beta Automine")
 local mainpage = MainUI.AddPage("Main", false)
 
 local currentenabled = false
