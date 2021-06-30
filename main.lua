@@ -1,13 +1,14 @@
-local UILibrary = loadstring(game:HttpGet("https://pastebin.com/raw/V1ca2q9s"))()
+local UILibrary = loadstring(game:HttpGet("https://descended.glitch.me/lualibs/twilight.lua"))()
 
 local MainUI = UILibrary.Load("Roblox Galaxy Beta Utilities")
 
 local mainpage = MainUI.AddPage("Main", false)
-local farmingpage = MainUI.AddPage("Autofarm", true)
-local combatpage = MainUI.AddPage("Combat", true)
-local progressionpage = MainUI.AddPage("Progression", true)
-local teleportpage = MenuUI.AddPage("Teleports", false)
-local miscpage = MenuUI.Addpage("Misc", true)
+local farmingpage = MainUI.AddPage("Autofarm", false)
+local combatpage = MainUI.AddPage("Combat", false)
+local progressionpage = MainUI.AddPage("Progression", false)
+local teleportpage = MainUI.AddPage("Teleports", true)
+local dockpage = MainUI.AddPage("Dock", true)
+local miscpage = MainUI.AddPage("Misc", false)
 
 -- farming page
 local autominesection = farmingpage.AddLabel("Automine")
@@ -69,7 +70,7 @@ local autominetoggle = farmingpage.AddToggle("Enable Automine", false, function(
 	end
 end)
 
-local oredropdown = mainpage.AddDropdown("Ore", {
+local oredropdown = farmingpage.AddDropdown("Ore", {
 	"Silicate Ore",
 	"Carbon Ore",
 	"Iridium Ore",
@@ -81,9 +82,13 @@ local oredropdown = mainpage.AddDropdown("Ore", {
 ore = tostring(value)
 end)
 
-local instructions = farmingpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake sure you have a miner out")
+farmingpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake sure you have a miner out")
 
 -- combat page
+
+combatpage.AddButton("Turret TP UI", function(value)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/turret_tp.lua"))()
+end)
 
 -- progression page
 
@@ -111,5 +116,63 @@ local abortwarehousebtn = progressionpage.AddButton("Abort unlocking all Warehou
 end)
 
 -- tp page
+
+-- docks page
+
+local dockdeb = false
+local bases = game.Workspace.Bases
+local function handlebase(base)
+	if base.Parent.Parent ~= bases then return end
+
+	local removebasebutton = dockpage.AddButton(base.Parent.Name, function()
+		if dockdeb == true then return end
+		dockdeb = true
+		local myship = game.Players.LocalPlayer.ActiveShip.Value
+
+        if not myship then
+            print("Failed to turret tp: you should spawn a ship first 🐒")
+			dockdeb = false
+            return
+        end
+
+		myship:SetPrimaryPartCFrame(CFrame.new(base.PrimaryPart.CFrame.Position.X, base.PrimaryPart.CFrame.Position.Y+250, base.PrimaryPart.CFrame.Position.Z))
+
+		wait(0.5)
+		local dockinitialized = false
+		
+		coroutine.resume(coroutine.create(function()
+		    repeat
+		        myship.PilotSeat.Throttle = 1
+		        game:GetService("RunService").Heartbeat:Wait()
+		    until dockinitialized == true
+		end))
+		
+		wait(2)
+
+		local args = {
+    		[1] = "ShipDock"
+		}
+
+		myship.ButtonPress:FireServer(unpack(args))
+		dockinitialized = true
+		wait(15)
+		dockdeb = false
+	end)
+	local listener1 = base.Parent.ChildRemoved:Connect(function()
+		if base.Parent then return end
+		removebasebutton()
+	end)
+	local listener2; listener2 = base:GetPropertyChangedSignal("Name"):Connect(function()
+		listener1:Disconnect()
+		listener2:Disconnect()
+		removebasebutton()
+		handlebase(base)
+	end)
+end
+
+bases.DescendantAdded:Connect(handlebase)
+for _, base in ipairs(bases:GetDescendants()) do
+	handlebase(base)
+end
 
 -- misc page
