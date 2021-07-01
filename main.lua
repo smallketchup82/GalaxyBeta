@@ -237,7 +237,7 @@ autobuildpage.AddButton("Auto Build", function()
 		if titanexists then pricesum += prices[13]*pallaquantity end
 		if quantexists then pricesum += prices[15]*quantquantity end
 
-		pricesum += (pricesum*0.8)
+		pricesum += (pricesum*0.08)
 
 		print(pricesum)
 
@@ -488,3 +488,80 @@ for _, base in ipairs(bases:GetDescendants()) do
 end
 
 -- misc page
+
+miscpage.AddToggle("Side Shiplist", false, function(value)
+
+	if value == true then 
+
+		for _, gui in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
+			if gui.Name == "SideShipList" then
+				gui:Destroy()
+			end
+		end
+
+		local SideShipList = Instance.new("ScreenGui")
+		local Main = Instance.new("ScrollingFrame")
+		local UIListLayout = Instance.new("UIListLayout")
+
+		SideShipList.Name = "SideShipList"
+		SideShipList.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+		SideShipList.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+		Main.Name = "Main"
+		Main.Parent = SideShipList
+		Main.Active = true
+		Main.AnchorPoint = Vector2.new(0.5, 0.5)
+		Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Main.BackgroundTransparency = 1.000
+		Main.BorderSizePixel = 0
+		Main.Position = UDim2.new(0.150000006, 0, 0.5, 0)
+		Main.Selectable = false
+		Main.Size = UDim2.new(0.25, 0, 1, 0)
+		Main.CanvasSize = UDim2.new(0, 0, 1, 0)
+
+		UIListLayout.Parent = Main
+		UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+		UIListLayout.Padding = UDim.new(0, 10)
+
+		local function addshiptolist(shipname)
+			local Ship = Instance.new("TextLabel")
+			Ship.Name = shipname
+			Ship.Parent = Main
+			Ship.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Ship.BackgroundTransparency = 1.000
+			Ship.Size = UDim2.new(1, 0, 0, 50)
+			Ship.Font = Enum.Font.Cartoon
+			Ship.Text = shipname
+			Ship.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Ship.TextScaled = true
+			Ship.TextSize = 14.000
+			Ship.TextWrapped = true
+			Ship.TextXAlignment = Enum.TextXAlignment.Left
+		end
+
+		local function removeshipfromlist(shipname)
+			if Main:FindFirstChild(shipname) then
+				Main:FindFirstChild(shipname):Destroy()
+			end
+	end
+
+	for _, ship in ipairs(game.Players.LocalPlayer.ShipInventory:GetChildren()) do
+		addshiptolist(ship.Name)
+	end
+
+	game.Players.LocalPlayer.ShipInventory.ChildAdded:Connect(function(val)
+		addshiptolist(val.Name)
+	end)
+
+	game.Players.LocalPlayer.ShipInventory.ChildRemoved:Connect(function(val)
+		removeshipfromlist(val.Name)
+	end)
+
+	else
+		for _, gui in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
+			if gui.Name == "SideShipList" then
+				gui:Destroy()
+			end
+		end
+	end
+end)
