@@ -4,11 +4,17 @@ local MainUI = UILibrary.Load("Roblox Galaxy Beta Utilities")
 
 local mainpage = MainUI.AddPage("Main", false)
 local farmingpage = MainUI.AddPage("Autofarm", false)
+local autobuildpage = MainUI.AddPage("AutoBuild", false)
 local combatpage = MainUI.AddPage("Combat", false)
 local progressionpage = MainUI.AddPage("Progression", false)
+local shippage = MainUI.AddPage("Ship", false)
 local teleportpage = MainUI.AddPage("Teleports", true)
 local dockpage = MainUI.AddPage("Dock", true)
 local miscpage = MainUI.AddPage("Misc", false)
+
+local bases = game.Workspace.Bases
+local ts = game:GetService("TweenService")
+local rs = game:GetService("RunService")
 
 -- farming page
 local autominesection = farmingpage.AddLabel("Automine")
@@ -84,6 +90,273 @@ end)
 
 farmingpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake sure you have a miner out")
 
+-- autobuild
+
+-- warehouse logic:
+
+-- silicate ID: 3
+-- carbon ID: 5
+-- iridium ID: 7
+-- adamantite ID: 9
+-- palladium ID: 11
+-- titanium ID: 13
+-- quantium ID: 15
+
+local shiptobuild
+local autobuydeb = false
+
+autobuildpage.AddDropdown("Ship", {
+	"Tango",
+	"Harvester",
+	"Advanced Miner",
+	"Industrial Miner",
+	"Tempura",
+	"Argonaut",
+	"Prospector",
+	"Hercules",
+	"Prepravca",
+	"Starblade",
+	"Dropship",
+	"Avenger",
+	"Osprey",
+	"Raven",
+	"Python",
+	"Archangel",
+	"Viper",
+	"Abyss",
+	"Sagittarius",
+	"Naglfar",
+	"Ridgebreaker",
+	"Cyclops",
+	"Leviathan",
+	"Apocalypse",
+	"Nemesis",
+	"Tempest",
+	"Tennhausen",
+	"Zeus"
+}, function(val)
+	if autobuydeb == true then print("Ship Building Dropdown disabled while autobuilding") return end
+	shiptobuild = val
+end)
+
+autobuildpage.AddButton("Auto Build", function()
+	if not shiptobuild then print("Please select a ship to build and press again!") return end
+
+	local warehouse = game.Players.LocalPlayer.Warehouse
+	-- clear warehouse
+
+	for _, item in ipairs(warehouse:GetDescendants()) do
+		if not item:IsA("NumberValue") then return end
+
+		local args = {
+    		[1] = tonumber(item.Name),
+    		[2] = item.Value,
+    		[3] = "Warehouse"
+		}
+
+		workspace.Bases:FindFirstChild("Mega Base").Model.Sell:InvokeServer(unpack(args))
+	end
+
+	-- check megabase prices
+	local hasenoughcredits
+
+	local ecoframe = game.ReplicatedStorage.Gui.EconomyFrame:Clone()
+
+	ecoframe.Visible = false
+	ecoframe.Parent = game.Players.LocalPlayer.PlayerGui.MyScreenGui
+
+	game:GetService("ReplicatedStorage").Remote.GetGridData:InvokeServer()
+
+	wait(2)
+
+	local mb
+
+	for _, obj in ipairs(ecoframe:GetDescendants()) do
+		if not obj:IsA("TextLabel") then continue end
+
+		if obj.Name ~= "FactionName" then continue end
+		
+		if obj.Text ~= "Mega Base" then continue end
+
+		mb = obj.Parent
+		break
+	end
+
+	if not mb then print("Error while calculating Megabase Prices, please contact a developer of this script for support.") return end
+
+	local prices = {
+		[3] = tonumber(mb:FindFirstChild("3").Text) + 0.1,
+		[5] = tonumber(mb:FindFirstChild("5").Text) + 0.1,
+		[7] = tonumber(mb:FindFirstChild("7").Text) + 0.1,
+		[9] = tonumber(mb:FindFirstChild("9").Text) + 0.1,
+		[11] = tonumber(mb:FindFirstChild("11").Text) + 0.1,
+		[13] = tonumber(mb:FindFirstChild("13").Text) + 0.1,
+		[15] = tonumber(mb:FindFirstChild("15").Text) + 0.1
+	}
+
+	ecoframe:Destroy()
+
+	local function autobuild(shipname) 
+
+		if game.Players.LocalPlayer.ShipInventory:FindFirstChild(shipname) then print("You already have the " .. shipname .. "!") return end
+
+		local args = {
+			[1] = shipname
+		}
+		
+		local result = game:GetService("ReplicatedStorage").Remote.GetShipInfo:InvokeServer(unpack(args))
+		
+		local function getstatsthingy(id)
+			local found = false
+			local quantity = nil
+			for _, val in ipairs(result) do
+				if val[1] == id then
+					found = true
+					quantity = val[2]
+					break
+				end
+			end
+			
+			return found, quantity
+		end
+		
+		local silicateexists, silicatequantity = getstatsthingy(3)
+		local carbonexists, carbonquantity = getstatsthingy(5)
+		local iridiumexists, iridiumquantity = getstatsthingy(7)
+		local adamexists, adamquantity = getstatsthingy(9)
+		local pallaexists, pallaquantity = getstatsthingy(11)
+		local titanexists, titanquantity = getstatsthingy(13)
+		local quantexists, quantquantity = getstatsthingy(15)
+
+		local pricesum = 0
+
+		if silicateexists then pricesum += prices[3]*silicatequantity end
+		if carbonexists then pricesum += prices[5]*carbonquantity end
+		if iridiumexists then pricesum += prices[7]*iridiumquantity end
+		if adamexists then pricesum += prices[9]*adamquantity end
+		if pallaexists then pricesum += prices[11]*pallaquantity end
+		if titanexists then pricesum += prices[13]*pallaquantity end
+		if quantexists then pricesum += prices[15]*quantquantity end
+
+		pricesum += (pricesum*0.8)
+
+		print(pricesum)
+
+		if pricesum >= game.Players.LocalPlayer.Credits.Value then print("You do not have enough credits to buy the " .. shipname .. "!") return end
+
+		if silicateexists then
+			local args = {
+    			[1] = 3,
+    			[2] = silicatequantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		if carbonexists then
+			local args = {
+    			[1] = 5,
+    			[2] = carbonquantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		if iridiumexists then
+			local args = {
+    			[1] = 7,
+    			[2] = iridiumquantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		if adamexists then
+			local args = {
+    			[1] = 9,
+    			[2] = adamquantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		if pallaexists then
+			local args = {
+    			[1] = 11,
+    			[2] = pallaquantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		if titanexists then
+			local args = {
+    			[1] = 13,
+    			[2] = titanquantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		if quantexists then
+			local args = {
+    			[1] = 15,
+    			[2] = quantquantity,
+    			[3] = "Warehouse"
+			}
+
+			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
+		end
+
+		local args = {
+    		[1] = shipname
+		}
+
+		workspace.Bases:FindFirstChild("Mega Base").Model.BuyShip:InvokeServer(unpack(args))
+	end
+
+	function comparefunny(shipname)
+		return shiptobuild == shipname
+	end
+
+	if comparefunny("Tango") then autobuild("Tango")
+	elseif comparefunny("Harvester") then autobuild("Harvester")
+	elseif comparefunny("Advanced Miner") then autobuild("Advanced Miner")
+	elseif comparefunny("Industrial Miner") then autobuild("Industrial Miner")
+	elseif comparefunny("Tempura") then autobuild("Tempura")
+	elseif comparefunny("Argonaut") then autobuild("Argonaut")
+	elseif comparefunny("Prospector") then autobuild("Prospector")
+	elseif comparefunny("Hercules") then autobuild("Hercules")
+	elseif comparefunny("Prepravca") then autobuild("Prepravca")
+	elseif comparefunny("Starblade") then autobuild("Starblade")
+	elseif comparefunny("Dropship") then autobuild("Dropship")
+	elseif comparefunny("Avenger") then autobuild("Avenger")
+	elseif comparefunny("Osprey") then autobuild("Osprey")
+	elseif comparefunny("Raven") then autobuild("Raven")
+	elseif comparefunny("Python") then autobuild("Python")
+	elseif comparefunny("Archangel") then autobuild("Archangel")
+	elseif comparefunny("Viper") then autobuild("Viper")
+	elseif comparefunny("Abyss") then autobuild("Abyss")
+	elseif comparefunny("Sagittarius") then autobuild("Sagittarius")
+	elseif comparefunny("Naglfar") then autobuild("Naglfar")
+	elseif comparefunny("Ridgebreaker") then autobuild("Ridgebreaker")
+	elseif comparefunny("Cyclops") then autobuild("Cyclops")
+	elseif comparefunny("Leviathan") then autobuild("Leviathan")
+	elseif comparefunny("Apocalypse") then autobuild("Apocalypse")
+	elseif comparefunny("Nemesis") then autobuild("Nemesis")
+	elseif comparefunny("Tempest") then autobuild("Tempest")
+	elseif comparefunny("Tennhausen") then autobuild("Tennhausen")
+	elseif comparefunny("Zeus") then autobuild("Zeus")
+	end
+
+end)
+
 -- combat page
 
 combatpage.AddButton("Turret TP UI", function(value)
@@ -93,34 +366,74 @@ end)
 -- progression page
 
 local abortedwarehouselvls = false
-local unlockwarehousebtn = progressionpage.AddButton("Unlock All Warehouse Levels (You need a lot of money)", function(value)
-    local warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
+local unlockwarehousebtn = progressionpage.AddButton("Unlock All Warehouse Levels [UNSTABLE]", function()
+	print("This is very glitchy or cause data loss, so at the moment it is disabled")
 
-    while wait() do
-        warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
-        if abortedwarehouselvls == true then print("Aborted buying all warehouses") break end
+    -- local warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
 
-        if warehouselvl == 21 then print("Finished buying all warehouse levels") break end
+    -- while wait() do
+    --     warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
+    --     if abortedwarehouselvls == true then print("Aborted buying all warehouses") break end
 
-        local args = {
-            [1] = warehouselvl+1
-        }
+    --     if warehouselvl == 21 then print("Finished buying all warehouse levels") break end
+
+    --     local args = {
+    --         [1] = warehouselvl+1
+    --     }
         
-        game:GetService("ReplicatedStorage").Remote.UpgradeWarehouse:InvokeServer(unpack(args))
+    --     game:GetService("ReplicatedStorage").Remote.UpgradeWarehouse:InvokeServer(unpack(args))
         
-    end
+    -- end
 end)
 
-local abortwarehousebtn = progressionpage.AddButton("Abort unlocking all Warehouse Levels", function(value)    
-    abortedwarehouselvls = true
+local abortwarehousebtn = progressionpage.AddButton("Abort unlocking all Warehouse Levels", function()
+	print("This is very glitchy or cause data loss, so at the moment it is disabled.")
+    -- abortedwarehouselvls = true
 end)
+
+-- ship page
+
+shippage.AddButton("Unlock Warp", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/unlockwarp.lua"))()
+end)
+
 
 -- tp page
+local function handlebasetp(base)
+	if base.Parent.Parent ~= bases then return end
+
+	local removebasebutton = teleportpage.AddButton(base.Parent.Name, function()
+
+		if game.Players.LocalPlayer.Character.Humanoid.Sit then print("You are seated! Teleporting is not available while you are seated or pilotting a ship.") return end
+
+		local args = {
+    		[1] = base.CenterPoint,
+			[2] = nil --[[Vector3]]
+		}
+
+		game:GetService("ReplicatedStorage").Remote.TeleportTo:InvokeServer(unpack(args))
+
+	end)
+	local listener1 = base.Parent.ChildRemoved:Connect(function()
+		if base.Parent then return end
+		removebasebutton()
+	end)
+	local listener2; listener2 = base:GetPropertyChangedSignal("Name"):Connect(function()
+		listener1:Disconnect()
+		listener2:Disconnect()
+		removebasebutton()
+		handlebasetp(base)
+	end)
+end
+
+bases.DescendantAdded:Connect(handlebasetp)
+for _, base in ipairs(bases:GetDescendants()) do
+	handlebasetp(base)
+end
 
 -- docks page
 
 local dockdeb = false
-local bases = game.Workspace.Bases
 local function handlebase(base)
 	if base.Parent.Parent ~= bases then return end
 
@@ -130,7 +443,7 @@ local function handlebase(base)
 		local myship = game.Players.LocalPlayer.ActiveShip.Value
 
         if not myship then
-            print("Failed to turret tp: you should spawn a ship first 🐒")
+            print("Failed to TP Ship: You should spawn a ship first 🐒")
 			dockdeb = false
             return
         end
