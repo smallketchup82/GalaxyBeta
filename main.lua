@@ -565,3 +565,6 @@ miscpage.AddToggle("Side Shiplist", false, function(value)
 		end
 	end
 end)
+
+miscpage.AddLabel("Created by benthealien20")
+miscpage.AddLabel("With help from Descended & BoyImmaGetChu")
