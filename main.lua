@@ -18,7 +18,7 @@ local ts = game:GetService("TweenService")
 local rs = game:GetService("RunService")
 
 -- farming page
-local autominesection = farmingpage.AddLabel("Automine")
+farmingpage.AddLabel("Automine")
 
 local currentenabled = false
 
@@ -89,7 +89,7 @@ local oredropdown = farmingpage.AddDropdown("Ore", {
 ore = tostring(value)
 end)
 
-farmingpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake sure you have a miner out")
+--farmingpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake sure you have a miner out")
 
 -- autobuild
 
@@ -104,7 +104,6 @@ farmingpage.AddLabel("Make sure you are docked at Mega Base or a Starbase.\nMake
 -- quantium ID: 15
 
 local shiptobuild
-local autobuydeb = false
 
 autobuildpage.AddDropdown("Ship", {
 	"Tango",
@@ -136,7 +135,6 @@ autobuildpage.AddDropdown("Ship", {
 	"Tennhausen",
 	"Zeus"
 }, function(val)
-	if autobuydeb == true then print("Ship Building Dropdown disabled while autobuilding") return end
 	shiptobuild = val
 end)
 
