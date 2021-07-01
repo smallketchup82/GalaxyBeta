@@ -1,4 +1,5 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/main.lua"))()
+print("You are using an outdated script!\nTo get the latest updates for Galaxy Beta Utilities use loadstring(game:HttpGet(\"https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/main.lua\"))() in place of the current script you are using.")
 
 
 -- local UILibrary = loadstring(game:HttpGet("https://pastebin.com/raw/V1ca2q9s"))()
