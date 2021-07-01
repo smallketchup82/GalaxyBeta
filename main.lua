@@ -1,3 +1,4 @@
+if game.PlaceId ~= 263135585 then print("run this in galaxy beta you monkey") return end
 local UILibrary = loadstring(game:HttpGet("https://descended.glitch.me/lualibs/twilight.lua"))()
 
 local MainUI = UILibrary.Load("Roblox Galaxy Beta Utilities")
