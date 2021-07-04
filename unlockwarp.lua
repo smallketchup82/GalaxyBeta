@@ -2,7 +2,7 @@ local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer
 local YourTeam = game.Players.LocalPlayer.Team
 local YourMiner = game.Players.LocalPlayer.ActiveShip.Value
 
-if not yourminer then print("spawn a ship you monkey 🐒") return end
+if not yourMiner then print("spawn a ship you monkey 🐒") return end
 local ship = game.Workspace.Ships:FindFirstChild(tostring(YourTeam)):FindFirstChild(tostring(YourMiner))
 
 if ship.Configuration:FindFirstChild("NoWarp") ~= null then
