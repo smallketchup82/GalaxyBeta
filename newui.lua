@@ -5,7 +5,10 @@ strings-override
 ]]
 if game.PlaceId ~= 263135585 then print("run this in galaxy beta you monkey 🐒") return end
 print("Running Galaxy Beta Utilities!")
+
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GreenDeno/Venyx-UI-Library/main/source.lua"))()
+-- https://raw.githubusercontent.com/GreenDeno/Venyx-UI-Library/main/documentation.txt
+
 local maingui = library.new("Galaxy Beta Utilities")
 
 local themes = {
@@ -38,7 +41,7 @@ local currentenabled = false
 
 local ore = "Silicate Ore"
 
-local autominetoggle = autominesection:addToggle("Enable Automine", false, function(value, update)
+local autominetoggle = autominesection:addToggle("Enable Automine", false, function(value)
 
 	if currentenabled == false and value == true then
 		currentenabled = true
@@ -49,7 +52,7 @@ local autominetoggle = autominesection:addToggle("Enable Automine", false, funct
             currentenabled = false
             maingui:Notify("No miner currently spawned!", "Please spawn a miner to use automine", function(val) 
             end)
-            update("Enable Automine", "Enable Automine", false)
+            autominesection:updateToggle("Enable Automine", "Enable Automine", false)
         end
 		for _, i in ipairs(YourMiner:GetDescendants()) do
 			if not i:IsA("BoolValue") then continue end
@@ -62,7 +65,7 @@ local autominetoggle = autominesection:addToggle("Enable Automine", false, funct
                         currentenabled = false
                         maingui:Notify("No miner currently spawned!", "Please spawn a miner to use automine", function(val) 
                         end)
-                        update("Enable Automine", "Enable Automine", false)
+                        autominesection:updateToggle("Enable Automine", "Enable Automine", false)
 						break
 					end
 	
@@ -90,7 +93,7 @@ local autominetoggle = autominesection:addToggle("Enable Automine", false, funct
 					else
 					    currentenabled = false
                         maingui:Notify("Error!", "Cannot find a starbase to dump at. Please dock at either Mega Base or a Starbase")
-                        update("Enable Automine", "Enable Automine", false)
+                        autominesection:updateToggle("Enable Automine", "Enable Automine", false)
 					end
 				end
 			end)
@@ -189,7 +192,7 @@ autobuilding:addDropdown("Ship", {
 	shiptobuild = val
 end)
 
-autobuilding:addButton("Auto Build", function(update)
+autobuilding:addButton("Auto Build", function()
 	if not shiptobuild then maingui:Notify("You did not select a ship to build", "Please select a ship to build and press again!") return end
 
 	if autobuilddeb == true then print("Please wait until you can use this again!") return end
@@ -383,7 +386,7 @@ end)
 
 local combatmainsec = combatpage:addSection("Main")
 
-combatmainsec:addButton("Turret TP UI", function(update)
+combatmainsec:addButton("Turret TP UI", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/turret_tp.lua"))()
 end)
 
@@ -393,15 +396,18 @@ end)
 
 local shipmainsec = shippage:addSection("Main")
 
-shipmainsec:addButton("Unlock Warp", function(update)
+shipmainsec:addButton("Unlock Warp", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/unlockwarp.lua"))()
+end)
+shipmainsec:addButton("Navigation (InstaTP, Quickdock, etc)", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/navigation.lua"))()
 end)
 
 -- misc page
 
 local miscsection = miscpage:addSection("Misc")
 
-miscsection:addToggle("Side Shiplist", false, function(value, update)
+miscsection:addToggle("Side Shiplist", false, function(value)
 
 	if value == true then 
 
@@ -480,10 +486,9 @@ end)
 
 local settings = miscpage:addSection("Settings")
 
-settings:addKeybind("Toggle GUI", Enum.KeyCode.RightShift, function(update)
+settings:addKeybind("Toggle GUI", Enum.KeyCode.RightShift, function()
     maingui:toggle()
-end, function(key, update)
-
+end, function()
 end)
 
 local theme = maingui:addPage("Theme")
