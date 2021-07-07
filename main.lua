@@ -437,6 +437,9 @@ miscsection:addToggle("Side Shiplist", false, function(value)
 		Main.Selectable = false
 		Main.Size = UDim2.new(0.25, 0, 1, 0)
 		Main.CanvasSize = UDim2.new(0, 0, 1, 0)
+		Main.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		Main.ScrollBarThickness = 0
+		Main.ScrollBarImageTransparency = 1
 
 		UIListLayout.Parent = Main
 		UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
