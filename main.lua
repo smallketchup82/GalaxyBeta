@@ -187,7 +187,8 @@ autobuilding:addDropdown("Ship", {
 	"Hevnetier",
 	"Revelation",
 	"Stormbringer",
-	"Rhino"
+	"Rhino",
+	"Swarmer"
 }, function(val)
 	shiptobuild = val
 end)

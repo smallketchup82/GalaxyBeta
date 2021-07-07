@@ -1,4 +1,6 @@
 -- WARNING: DO NOT USE THIS SCRIPT ITS CURRENTLY EXPERIMENTAL
+local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 local YourTeam = game.Players.LocalPlayer.Team
 local YourMiner = game.Players.LocalPlayer.ActiveShip.Value
 
