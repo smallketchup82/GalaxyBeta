@@ -299,7 +299,18 @@ autobuilding:addButton("Auto Build", function()
 
 		print(pricesum)
 
-		if pricesum >= game.Players.LocalPlayer.Credits.Value then maingui:Notify("Not enough credits!", "You do not have enough credits to buy the " .. shipname .. "!") return end
+		function comma_value(amount)
+			local formatted = amount
+			while true do  
+			  formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+			  if (k==0) then
+				break
+			  end
+			end
+			return formatted
+		  end
+
+		if pricesum >= game.Players.LocalPlayer.Credits.Value then maingui:Notify("Not enough credits!", "You do not have enough credits to buy the " .. shipname .. "!" .. "\nEstimated Amount Required: " .. comma_value(tonumber(pricesum))) return end
 
 		if silicateexists then
 			local args = {
