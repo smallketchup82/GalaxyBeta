@@ -376,7 +376,7 @@ autobuilding:addButton("Auto Build", function()
 		}
 
 		workspace.Bases:FindFirstChild("Mega Base").Model.BuyShip:InvokeServer(unpack(args))
-        maingui:Notify("", "Finished building " .. shipname .. "!")
+        maingui:Notify("Done!", "Finished building " .. shipname .. "!")
 	end
 	
 	autobuild(shiptobuild)
