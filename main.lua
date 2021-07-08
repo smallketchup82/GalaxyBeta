@@ -310,7 +310,7 @@ autobuilding:addButton("Auto Build", function()
 			return formatted
 		  end
 
-		if pricesum >= game.Players.LocalPlayer.Credits.Value then maingui:Notify("Not enough credits!", "You do not have enough credits to buy the " .. shipname .. "!" .. "\nEstimated Amount Required: " .. comma_value(tonumber(pricesum))) return end
+		if pricesum >= game.Players.LocalPlayer.Credits.Value then maingui:Notify("Not enough credits!", "You do not have enough credits to buy the " .. shipname .. "!" .. "\nEstimated Amount Required: $" .. comma_value(tonumber(pricesum))) return end
 
 		if silicateexists then
 			local args = {
