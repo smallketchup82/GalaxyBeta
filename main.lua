@@ -196,7 +196,7 @@ end)
 autobuilding:addButton("Auto Build", function()
 	if not shiptobuild then maingui:Notify("You did not select a ship to build", "Please select a ship to build and press again!") return end
 
-	if autobuilddeb == true then maingui:Notify("", "Please wait until you can use this again!") return end
+	if autobuilddeb == true then print("Please wait until you can use this again!") return end
 	autobuilddeb = true
 
 	local warehouse = game.Players.LocalPlayer.Warehouse
