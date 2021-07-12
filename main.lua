@@ -402,6 +402,264 @@ combatmainsec:addButton("Turret TP UI", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/turret_tp.lua"))()
 end)
 
+local espsec = combatpage:addSection("ESP")
+
+local shipespenabled = true
+
+espsec:addToggle("Ship ESP", false, function(val)
+	local team = game.Players.LocalPlayer.Team
+	local ships = game.workspace.Ships
+
+	if val == true then 
+
+		if shipespenabled == false then shipespenabled = true end
+
+		for _, shipteam in ipairs(ships:GetChildren()) do
+		
+		    for _, ship in ipairs(shipteam:GetChildren()) do 
+		        if not ship.CenterPoint:FindFirstChild("ESP") then 
+		        local BillboardGui = Instance.new("BillboardGui", ship.CenterPoint)
+		        local TextLabel = Instance.new("TextLabel", BillboardGui)
+		            BillboardGui.Adornee = ship.CenterPoint
+		            BillboardGui.Name = "ESP"
+		            BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+		            BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+		            BillboardGui.AlwaysOnTop = true
+		            TextLabel.BackgroundTransparency = 1
+		            TextLabel.Position = UDim2.new(0, 0, 0, -50)
+		            TextLabel.Size = UDim2.new(0, 100, 0, 100)
+		            TextLabel.Font = Enum.Font.SourceSansSemibold
+		            TextLabel.TextSize = 20
+		            TextLabel.TextColor3 = Color3.new(1, 1, 1)
+		            TextLabel.TextStrokeTransparency = 0
+		            TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+		            TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
+		            TextLabel.ZIndex = 10
+				
+		            game:GetService("RunService").RenderStepped:Connect(function()
+		                TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
+		            end)
+		        end
+			
+		    if ship:FindFirstChild("ShipParts") then 
+		        for _, part in ipairs(ship["ShipParts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+				
+		        local a = Instance.new("BoxHandleAdornment")
+		            a.Name = part.Name:lower().."_ESP"
+		            a.Parent = part
+		            a.Adornee = part
+		            a.AlwaysOnTop = true
+		            a.ZIndex = 0
+		            a.Size = part.Size
+		            a.Transparency = 0.3
+		            a.Color = BrickColor.new("White")
+		        end
+		        return
+		    else
+			
+		    for _, part in ipairs(ship["Ship Parts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+			
+		        local a = Instance.new("BoxHandleAdornment")
+		            a.Name = part.Name:lower().."_ESP"
+		            a.Parent = part
+		            a.Adornee = part
+		            a.AlwaysOnTop = true
+		            a.ZIndex = 0
+		            a.Size = part.Size
+		            a.Transparency = 0.3
+		            a.Color = BrickColor.new("White")
+		    end
+		    end
+		    end
+		end
+
+		local listener1 = ships.ChildAdded:Connect(function(shipteam)
+		    local listener2 = shipteam.ChildAdded:Connect(function(ship)
+			
+		    if ship.Parent == "Alien" then return end
+			
+		    wait(5)
+			
+		        if not ship.CenterPoint:FindFirstChild("ESP") then
+		            local BillboardGui = Instance.new("BillboardGui", ship.CenterPoint)
+		            local TextLabel = Instance.new("TextLabel", BillboardGui)
+		                BillboardGui.Adornee = ship.CenterPoint
+		                BillboardGui.Name = "ESP"
+		                BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+		                BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+		                BillboardGui.AlwaysOnTop = true
+		                TextLabel.BackgroundTransparency = 1
+		                TextLabel.Position = UDim2.new(0, 0, 0, -50)
+		                TextLabel.Size = UDim2.new(0, 100, 0, 100)
+		                TextLabel.Font = Enum.Font.SourceSansSemibold
+		                TextLabel.TextSize = 20
+		                TextLabel.TextColor3 = Color3.new(1, 1, 1)
+		                TextLabel.TextStrokeTransparency = 0
+		                TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+		                TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
+		                TextLabel.ZIndex = 10
+				
+		            game:GetService("RunService").RenderStepped:Connect(function()
+		                TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
+		            end)
+		        end
+			
+		    if ship:FindFirstChild("ShipParts") then
+		        for _, part in ipairs(ship["ShipParts"]:GetDescendants()) do
+		      if not part:IsA("BasePart") then continue end
+		      if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+				
+		        local a = Instance.new("BoxHandleAdornment")
+		            a.Name = part.Name:lower().."_ESP"
+		            a.Parent = part
+		            a.Adornee = part
+		            a.AlwaysOnTop = true
+		            a.ZIndex = 0
+		            a.Size = part.Size
+		            a.Transparency = 0.3
+		            a.Color = BrickColor.new("White")
+		        end
+		        return
+		    else
+		    for _, part in ipairs(ship["Ship Parts"]:GetDescendants()) do
+		      if not part:IsA("BasePart") then continue end
+		      if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+			
+		        local a = Instance.new("BoxHandleAdornment")
+		            a.Name = part.Name:lower().."_ESP"
+		            a.Parent = part
+		            a.Adornee = part
+		            a.AlwaysOnTop = true
+		            a.ZIndex = 0
+		            a.Size = part.Size
+		            a.Transparency = 0.3
+		            a.Color = BrickColor.new("White")
+		    end
+		    end
+		
+		    end)
+		end)
+	else
+		maingui:Notify("Disabling ESP is coming soon", "For now rejoin the game.")
+	end
+end)
+
+local baseesptoggled = true
+
+espsec:addToggle("Base ESP", false, function(val)
+
+	if val == true then
+
+		if baseesptoggled == false then baseesptoggled = true end
+
+		local team = game.Players.LocalPlayer.Team
+		local bases = game.workspace.Bases
+
+		local ignoreteam = false
+
+		for _, base in ipairs(bases:GetChildren()) do
+		    if base.Name == "Mega Base" then continue end
+		    if ignoreteam == true and base.Name == tostring(team) then continue end
+		
+		    if not base.Starbase.CenterPoint:FindFirstChild("ESP") then 
+		        local BillboardGui = Instance.new("BillboardGui", base.Starbase.CenterPoint)
+		        local TextLabel = Instance.new("TextLabel", BillboardGui)
+		            BillboardGui.Adornee = base.Starbase.CenterPoint
+		            BillboardGui.Name = "ESP"
+		            BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+		            BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+		            BillboardGui.AlwaysOnTop = true
+		            TextLabel.BackgroundTransparency = 1
+		            TextLabel.Position = UDim2.new(0, 0, 0, -50)
+		            TextLabel.Size = UDim2.new(0, 100, 0, 100)
+		            TextLabel.Font = Enum.Font.SourceSansSemibold
+		            TextLabel.TextSize = 20
+		            TextLabel.TextColor3 = Color3.new(1, 1, 1)
+		            TextLabel.TextStrokeTransparency = 0
+		            TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+		            TextLabel.Text = 'Name: ' .. base.Name .. " | Shield: " .. math.floor(base.Starbase.Shield.Value) .. " | Hull: " .. math.floor(base.Starbase.Hull.Value)
+		            TextLabel.ZIndex = 10
+			
+		            game:GetService("RunService").RenderStepped:Connect(function()
+		                TextLabel.Text = 'Name: ' .. base.Name .. " | Shield: " .. math.floor(base.Starbase.Shield.Value) .. " | Hull: " .. math.floor(base.Starbase.Hull.Value)
+		            end)
+		    end
+		
+		    for _, part in ipairs(base.Starbase["Base Parts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+			
+		        local a = Instance.new("BoxHandleAdornment")
+		            a.Name = part.Name:lower().."_ESP"
+		            a.Parent = part
+		            a.Adornee = part
+		            a.AlwaysOnTop = true
+		            a.ZIndex = 0
+		            a.Size = part.Size
+		            a.Transparency = 0.3
+		            a.Color = BrickColor.new("White")
+		    end
+		end
+
+		local listener = bases.ChildAdded:Connect(function(base)
+		
+		    wait(5)
+		
+		    if base.Name == "Mega Base" then return end
+		
+		    if ignoreteam == true and base.Name == tostring(game.Players.LocalPlayer.Team) then return end
+		
+		    local model = base:WaitForChild("Starbase")
+		
+		
+		        if not base.Starbase.CenterPoint:FindFirstChild("ESP") then
+		            local BillboardGui = Instance.new("BillboardGui", model.CenterPoint)
+		            local TextLabel = Instance.new("TextLabel", BillboardGui)
+		                BillboardGui.Adornee = model.CenterPoint
+		                BillboardGui.Name = "ESP"
+		                BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+		                BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+		                BillboardGui.AlwaysOnTop = true
+		                TextLabel.BackgroundTransparency = 1
+		                TextLabel.Position = UDim2.new(0, 0, 0, -50)
+		                TextLabel.Size = UDim2.new(0, 100, 0, 100)
+		                TextLabel.Font = Enum.Font.SourceSansSemibold
+		                TextLabel.TextSize = 20
+		                TextLabel.TextColor3 = Color3.new(1, 1, 1)
+		                TextLabel.TextStrokeTransparency = 0
+		                TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+		                TextLabel.Text = 'Name: ' .. base.Name .. " | Shield: " .. math.floor(model.Shield.Value) .. " | Hull: " .. math.floor(model.Hull.Value)
+		                TextLabel.ZIndex = 10
+				
+		            game:GetService("RunService").RenderStepped:Connect(function()
+		                TextLabel.Text = 'Name: ' .. base.Name .. " | Shield: " .. math.floor(model.Shield.Value) .. " | Hull: " .. math.floor(model.Hull.Value)
+		            end)
+		        end
+			
+		    for _, part in ipairs(model["Base Parts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+
+		        local a = Instance.new("BoxHandleAdornment")
+		            a.Name = part.Name:lower().."_ESP"
+		            a.Parent = part
+		            a.Adornee = part
+		            a.AlwaysOnTop = true
+		            a.ZIndex = 0
+		            a.Size = part.Size
+		            a.Transparency = 0.3
+		            a.Color = BrickColor.new("White")    
+		    end
+		end)
+	else
+		maingui:Notify("Disabling ESP is coming soon", "For now rejoin the game.")
+	end
+end)
+
 -- progression page
 
 -- ship page
