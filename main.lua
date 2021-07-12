@@ -117,7 +117,7 @@ local autobuilding = autobuildpage:addSection("Main")
 local shiptobuild
 local autobuilddeb = false
 
-autobuilding:addDropdown("Ship", {
+local allships = {
 	"Tango",
 	"Harvester",
 	"Advanced Miner",
@@ -184,9 +184,7 @@ autobuilding:addDropdown("Ship", {
 	"Stormbringer",
 	"Rhino",
 	"Swarmer"
-}, function(val)
-	shiptobuild = val
-end)
+}
 
 local warehousecosts = {
 	[2] = 2000,
@@ -211,74 +209,119 @@ local warehousecosts = {
 	[21] = 60000
 }
 
+local materialspace = {
+	[3] = 1,
+	[5] = 1.25,
+	[7] = 1.5,
+	[9] = 2,
+	[11] = 2,
+	[13] = 2,
+	[15] = 2
+}
+
+local warehousespace = {
+	[1] = 1000,
+	[2] = 2500,
+	[3] = 5000,
+	[4] = 7500,
+	[5] = 10000,
+	[6] = 12500,
+	[7] = 15000,
+	[8] = 17500,
+	[9] = 20000,
+	[10] = 22500,
+	[11] = 25000,
+	[12] = 27500,
+	[13] = 30000,
+	[14] = 32500,
+	[15] = 35000,
+	[16] = 37500,
+	[17] = 40000,
+	[18] = 45000,
+	[19] = 50000,
+	[20] = 55000,
+	[21] = 60000
+}
+
+autobuilding:addDropdown("Ship", allships, function(val)
+	shiptobuild = val
+end)
+
 autobuilding:addButton("Auto Build", function()
 	if not shiptobuild then maingui:Notify("You did not select a ship to build", "Please select a ship to build and press again!") return end
-
+	
 	if autobuilddeb == true then print("Please wait until you can use this again!") return end
 	autobuilddeb = true
-
-	local warehouse = game.Players.LocalPlayer.Warehouse
-
-	if game.Players.LocalPlayer.WarehouseLevel ~= 21 then
-		maingui:Notify("Level 21 Warehouse Required!", "You need to have a level 21 warehouse in order to utilize autobuilding. Warehoue checking will come soon")
-		return
-	end
-		-- clear warehouse
-
-	for _, item in ipairs(warehouse:GetDescendants()) do
-		if not item:IsA("NumberValue") then return end
-
-		local args = {
-    		[1] = tonumber(item.Name),
-    		[2] = item.Value,
-    		[3] = "Warehouse"
-		}
-
-		workspace.Bases:FindFirstChild("Mega Base").Model.Sell:InvokeServer(unpack(args))
-	end
-
-	-- check megabase prices
-	local hasenoughcredits
-
-	local ecoframe = game.ReplicatedStorage.Gui.EconomyFrame:Clone()
-
-	ecoframe.Visible = false
-	ecoframe.Parent = game.Players.LocalPlayer.PlayerGui.MyScreenGui
-
-	game:GetService("ReplicatedStorage").Remote.GetGridData:InvokeServer()
-
-	wait(2)
-
-	local mb
-
-	for _, obj in ipairs(ecoframe:GetDescendants()) do
-		if not obj:IsA("TextLabel") then continue end
-
-		if obj.Name ~= "FactionName" then continue end
-		
-		if obj.Text ~= "Mega Base" then continue end
-
-		mb = obj.Parent
-		break
-	end
-
-	if not mb then maingui:Notify("Error while calculating Megabase Prices!", "Please contact a developer of this script for support.") return end
-
-	local prices = {
-		[3] = tonumber(mb:FindFirstChild("3").Text) + 0.1,
-		[5] = tonumber(mb:FindFirstChild("5").Text) + 0.1,
-		[7] = tonumber(mb:FindFirstChild("7").Text) + 0.1,
-		[9] = tonumber(mb:FindFirstChild("9").Text) + 0.1,
-		[11] = tonumber(mb:FindFirstChild("11").Text) + 0.1,
-		[13] = tonumber(mb:FindFirstChild("13").Text) + 0.1,
-		[15] = tonumber(mb:FindFirstChild("15").Text) + 0.1
-	}
-
-	ecoframe:Destroy()
-
+	
 	local function autobuild(shipname) 
-
 		if game.Players.LocalPlayer.ShipInventory:FindFirstChild(shipname) then maingui:Notify("", "You already have the " .. shipname .. "!") return end
+		
+		local warehouse = game.Players.LocalPlayer.Warehouse
+
+		if game.Players.LocalPlayer.WarehouseLevel ~= 21 then
+			maingui:Notify("Level 21 Warehouse Required!", "You need to have a level 21 warehouse in order to utilize autobuilding. Warehoue checking will come soon")
+			return
+		end
+			-- clear warehouse
+	
+		for _, item in ipairs(warehouse:GetDescendants()) do
+			if not item:IsA("NumberValue") then return end
+	
+			local args = {
+				[1] = tonumber(item.Name),
+				[2] = item.Value,
+				[3] = "Warehouse"
+			}
+			
+			workspace.Bases:FindFirstChild("Mega Base").Model.Sell:InvokeServer(unpack(args))
+		end
+	
+		-- check megabase prices
+		local hasenoughcredits
+
+		if game.Players.LocalPlayer.PlayerGui.MyScreenGui:FindFirstChild("EconomyFrame") then
+			game.Players.LocalPlayer.PlayerGui.MyScreenGui:FindFirstChild("EconomyFrame"):Destroy()
+		end
+	
+		local ecoframe = game.ReplicatedStorage.Gui.EconomyFrame:Clone()
+	
+		ecoframe.Visible = false
+		ecoframe.Parent = game.Players.LocalPlayer.PlayerGui.MyScreenGui
+	
+		game:GetService("ReplicatedStorage").Remote.GetGridData:InvokeServer()
+	
+		wait(2)
+
+		if game.Players.LocalPlayer.PlayerGui.MyScreenGui:FindFirstChild("EconomyFrame") then
+			game.Players.LocalPlayer.PlayerGui.MyScreenGui:FindFirstChild("EconomyFrame"):Destroy()
+		end
+	
+		local mb
+	
+		for _, obj in ipairs(ecoframe:GetDescendants()) do
+			if not obj:IsA("TextLabel") then continue end
+	
+			if obj.Name ~= "FactionName" then continue end
+			
+			if obj.Text ~= "Mega Base" then continue end
+	
+			mb = obj.Parent
+			break
+		end
+	
+		if not mb then maingui:Notify("Error while calculating Megabase Prices!", "Please contact a developer of this script for support.") return end
+	
+		local prices = {
+			[3] = tonumber(mb:FindFirstChild("3").Text) + 0.1,
+			[5] = tonumber(mb:FindFirstChild("5").Text) + 0.1,
+			[7] = tonumber(mb:FindFirstChild("7").Text) + 0.1,
+			[9] = tonumber(mb:FindFirstChild("9").Text) + 0.1,
+			[11] = tonumber(mb:FindFirstChild("11").Text) + 0.1,
+			[13] = tonumber(mb:FindFirstChild("13").Text) + 0.1,
+			[15] = tonumber(mb:FindFirstChild("15").Text) + 0.1
+		}
+	
+		ecoframe:Destroy()
 
 		local args = {
 			[1] = shipname
@@ -414,283 +457,6 @@ autobuilding:addButton("Auto Build", function()
 	end
 	
 	autobuild(shiptobuild)
-	autobuilddeb = false
-end)
-
-autobuilding:addButton("Auto Build All Ships", function()
-	if autobuilddeb == true then print("Please wait until you can use this again!") return end
-	autobuilddeb = true
-
-	local function autobuild(shipname) 
-
-		local warehouse = game.Players.LocalPlayer.Warehouse
-		-- clear warehouse
-
-		for _, item in ipairs(warehouse:GetDescendants()) do
-			if not item:IsA("NumberValue") then return end
-
-			local args = {
-    			[1] = tonumber(item.Name),
-    			[2] = item.Value,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Sell:InvokeServer(unpack(args))
-		end
-
-		-- check megabase prices
-		local hasenoughcredits
-
-		local ecoframe = game.ReplicatedStorage.Gui.EconomyFrame:Clone()
-
-		ecoframe.Visible = false
-		ecoframe.Parent = game.Players.LocalPlayer.PlayerGui.MyScreenGui
-
-		game:GetService("ReplicatedStorage").Remote.GetGridData:InvokeServer()
-
-		wait(2)
-
-		local mb
-
-		for _, obj in ipairs(ecoframe:GetDescendants()) do
-			if not obj:IsA("TextLabel") then continue end
-
-			if obj.Name ~= "FactionName" then continue end
-		
-			if obj.Text ~= "Mega Base" then continue end
-
-			mb = obj.Parent
-			break
-		end
-
-		if not mb then maingui:Notify("Error while calculating Megabase Prices!", "Please contact a developer of this script for support.") return end
-
-		local prices = {
-			[3] = tonumber(mb:FindFirstChild("3").Text) + 0.1,
-			[5] = tonumber(mb:FindFirstChild("5").Text) + 0.1,
-			[7] = tonumber(mb:FindFirstChild("7").Text) + 0.1,
-			[9] = tonumber(mb:FindFirstChild("9").Text) + 0.1,
-			[11] = tonumber(mb:FindFirstChild("11").Text) + 0.1,
-			[13] = tonumber(mb:FindFirstChild("13").Text) + 0.1,
-			[15] = tonumber(mb:FindFirstChild("15").Text) + 0.1
-		}
-
-		ecoframe:Destroy()
-
-		if game.Players.LocalPlayer.ShipInventory:FindFirstChild(shipname) then maingui:Notify("", "You already have the " .. shipname .. "!") return end
-
-		local args = {
-			[1] = shipname
-		}
-		
-		local result = game:GetService("ReplicatedStorage").Remote.GetShipInfo:InvokeServer(unpack(args))
-		
-		local function getstatsthingy(id)
-			local found = false
-			local quantity = nil
-			for _, val in ipairs(result) do
-				if val[1] == id then
-					found = true
-					quantity = val[2]
-					break
-				end
-			end
-			
-			return found, quantity
-		end
-		
-		local silicateexists, silicatequantity = getstatsthingy(3)
-		local carbonexists, carbonquantity = getstatsthingy(5)
-		local iridiumexists, iridiumquantity = getstatsthingy(7)
-		local adamexists, adamquantity = getstatsthingy(9)
-		local pallaexists, pallaquantity = getstatsthingy(11)
-		local titanexists, titanquantity = getstatsthingy(13)
-		local quantexists, quantquantity = getstatsthingy(15)
-
-		local pricesum = 0
-
-		if silicateexists then pricesum = pricesum + prices[3]*silicatequantity end
-		if carbonexists then pricesum = pricesum + prices[5]*carbonquantity end
-		if iridiumexists then pricesum = pricesum + prices[7]*iridiumquantity end
-		if adamexists then pricesum = pricesum + prices[9]*adamquantity end
-		if pallaexists then pricesum = pricesum + prices[11]*pallaquantity end
-		if titanexists then pricesum = pricesum + prices[13]*pallaquantity end
-		if quantexists then pricesum = pricesum + prices[15]*quantquantity end
-
-		pricesum += (pricesum*0.08)
-
-		print(pricesum)
-
-		function comma_value(amount)
-			local formatted = amount
-			while true do  
-			  formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
-			  if (k==0) then
-				break
-			  end
-			end
-			return formatted
-		  end
-
-		if pricesum >= game.Players.LocalPlayer.Credits.Value then maingui:Notify("Not enough credits!", "You do not have enough credits to buy the " .. shipname .. "!" .. "\nEstimated Amount Required: $" .. comma_value(tonumber(pricesum))) return end
-
-		if silicateexists then
-			local args = {
-    			[1] = 3,
-    			[2] = silicatequantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		if carbonexists then
-			local args = {
-    			[1] = 5,
-    			[2] = carbonquantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		if iridiumexists then
-			local args = {
-    			[1] = 7,
-    			[2] = iridiumquantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		if adamexists then
-			local args = {
-    			[1] = 9,
-    			[2] = adamquantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		if pallaexists then
-			local args = {
-    			[1] = 11,
-    			[2] = pallaquantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		if titanexists then
-			local args = {
-    			[1] = 13,
-    			[2] = titanquantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		if quantexists then
-			local args = {
-    			[1] = 15,
-    			[2] = quantquantity,
-    			[3] = "Warehouse"
-			}
-
-			workspace.Bases:FindFirstChild("Mega Base").Model.Buy:InvokeServer(unpack(args))
-		end
-
-		local args = {
-    		[1] = shipname
-		}
-
-		workspace.Bases:FindFirstChild("Mega Base").Model.BuyShip:InvokeServer(unpack(args))
-        maingui:Notify("Done!", "Finished building " .. shipname .. "!")
-	end
-
-	maingui:Notify("WARNING!", "Auto-Building every ship is currently experimental and may cause data loss.\nAre you sure that you want to run this?", function(val)
-		if val == true then 
-
-			local allships = {
-				"Tango",
-				"Harvester",
-				"Advanced Miner",
-				"Industrial Miner",
-				"Wyrm",
-				"Tempura",
-				"Argonaut",
-				"Prospector",
-				"Hercules",
-				"Prepravca",
-				"Starblade",
-				"Dropship",
-				"Avenger",
-				"Osprey",
-				"Raven",
-				"Python",
-				"Archangel",
-				"Viper",
-				"Abyss",
-				"Corvid",
-				"Phantom",
-				"Centurion",
-				"Zero",
-				"Scimitar",
-				"Cobra",
-				"Sabre Tooth",
-				"Xenon",
-				"Gunslinger",
-				"Reaver",
-				"Gideon",
-				"Orion",
-				"Invictus",
-				"Spectre",
-				"Nova",
-				"Sixfold",
-				-- "Bastion",
-				-- "Dire Wolf",
-				-- "Aeaphiel",
-				-- "Radiance",
-				-- "Hecate",
-				-- "Razor Wing",
-				-- "Belvat",
-				-- "Black Flare",
-				-- "Grievion",
-				-- "Sovereign",
-				-- "Hasatan",
-				-- "Hawklight",
-				-- "Aegis",
-				-- "Ampharos",
-				-- "Warlock",
-				-- "Archeon",
-				-- "Sagittarius",
-				-- "Naglfar",
-				-- "Ridgebreaker",
-				-- "Cyclops",
-				-- "Leviathan",
-				-- "Apocalypse",
-				-- "Nemesis",
-				-- "Tempest",
-				-- "Tennhausen",
-				-- "Zeus",
-				-- "Hevnetier",
-				-- "Revelation",
-				-- "Stormbringer",
-				-- "Rhino",
-				-- "Swarmer"
-			}
-		
-			for _, ship in ipairs(allships) do
-				autobuild(ship)
-			end
-
-		end
-	end)
-	
 	autobuilddeb = false
 end)
 
