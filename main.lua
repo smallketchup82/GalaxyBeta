@@ -259,7 +259,7 @@ autobuilding:addButton("Auto Build", function()
 		local warehouse = game.Players.LocalPlayer.Warehouse
 
 		if game.Players.LocalPlayer.WarehouseLevel ~= 21 then
-			maingui:Notify("Level 21 Warehouse Required!", "You need to have a level 21 warehouse in order to utilize autobuilding. Warehoue checking will come soon")
+			maingui:Notify("Level 21 Warehouse Recommended!", "You need to have a level 21 warehouse to prevent data loss or the script breaking while autobuilding. Warehouse checking will come soon")
 			return
 		end
 			-- clear warehouse
