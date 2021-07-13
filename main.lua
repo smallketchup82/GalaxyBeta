@@ -307,6 +307,8 @@ autobuilding:addButton("Auto Build", function()
 			mb = obj.Parent
 			break
 		end
+
+		wait(1)
 	
 		if not mb then maingui:Notify("Error while calculating Megabase Prices!", "Please contact a developer of this script for support.") return end
 	
