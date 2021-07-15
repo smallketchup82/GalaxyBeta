@@ -1,4 +1,5 @@
 -- WARNING: DO NOT USE THIS SCRIPT ITS CURRENTLY EXPERIMENTAL
+if game.PlaceId ~= 263135585 then print("run this in galaxy beta you monkey 🐒") return end
 local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
 character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 local YourTeam = game.Players.LocalPlayer.Team

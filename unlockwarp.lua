@@ -1,3 +1,4 @@
+if game.PlaceId ~= 263135585 then print("run this in galaxy beta you monkey 🐒") return end
 local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
 local YourTeam = game.Players.LocalPlayer.Team
 local YourMiner = game.Players.LocalPlayer.ActiveShip.Value
