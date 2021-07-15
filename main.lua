@@ -1,5 +1,6 @@
 if game.PlaceId ~= 263135585 then print("run this in galaxy beta you monkey 🐒") return end
 print("Running Galaxy Beta Utilities!")
+print("WARNING: THIS SCRIPT MAY CRASH YOUR SYNAPSE. IN THIS CASE PLEASE EXECUTE IT USING INTERNAL UI")
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/smallketchup82/GalaxyBeta/main/UILibrary.lua"))()
 -- https://raw.githubusercontent.com/GreenDeno/Venyx-UI-Library/main/documentation.txt
