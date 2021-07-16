@@ -16,7 +16,7 @@ local themes = {
     TextColor = Color3.fromRGB(255, 255, 255)
 }
 
-local mainpage = maingui:addPage("Main")
+--local mainpage = maingui:addPage("Main")
 local farmingpage = maingui:addPage("Autofarm")
 local autobuildpage = maingui:addPage("AutoBuild")
 local combatpage = maingui:addPage("Combat")
