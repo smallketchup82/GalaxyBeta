@@ -16,7 +16,7 @@ local themes = {
     TextColor = Color3.fromRGB(255, 255, 255)
 }
 
---local mainpage = maingui:addPage("Main")
+local mainpage = maingui:addPage("Main")
 local farmingpage = maingui:addPage("Autofarm")
 local autobuildpage = maingui:addPage("AutoBuild")
 local combatpage = maingui:addPage("Combat")
@@ -834,3 +834,5 @@ for theme, color in pairs(themes) do -- all in one theme changer, i know, im coo
     maingui:setTheme(theme, color3)
 end)
 end
+
+maingui:SelectPage(maingui.pages[2], true)
