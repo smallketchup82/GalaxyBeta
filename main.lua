@@ -63,10 +63,9 @@ local ore = "Silicate Ore"
 local function checkandupgradewarehouse()
 	local warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
 	local credits = game.Players.LocalPlayer.Credits.Value
-
-	local nextwarelvl = tonumber(warehouselvl) + 1
-
+	
 	if warehouselvl == 21 then return end
+	local nextwarelvl = tonumber(warehouselvl) + 1
 
 	if credits > warehousecosts[nextwarelvl] then
 		local args = {
