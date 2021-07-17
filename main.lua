@@ -28,16 +28,56 @@ local bases = game.Workspace.Bases
 local ts = game:GetService("TweenService")
 local rs = game:GetService("RunService")
 
+local warehousecosts = {
+	[2] = 2000,
+	[3] = 4000,
+	[4] = 6000,
+	[5] = 8000,
+	[6] = 10000,
+	[7] = 12000,
+	[8] = 14000,
+	[9] = 16000,
+	[10] = 18000,
+	[11] = 20000,
+	[12] = 22000,
+	[13] = 24000,
+	[14] = 26000,
+	[15] = 28000,
+	[16] = 30000,
+	[17] = 32000,
+	[18] = 35000,
+	[19] = 40000,
+	[20] = 50000,
+	[21] = 60000
+}
 
 -- farming page
 
 local autominesection = farmingpage:addSection("Automine")
 
 local currentenabled = false
+local upgradewarehousewhileautomining = false
 
 local ore = "Silicate Ore"
 
-local autominetoggle = autominesection:addToggle("Enable Automine", false, function(value)
+local function checkandupgradewarehouse()
+	local warehouselvl = game.Players.LocalPlayer.WarehouseLevel.Value
+	local credits = game.Players.LocalPlayer.Credits.Value
+
+	local nextwarelvl = tonumber(warehouselvl) + 1
+
+	if warehouselvl == 21 then return end
+
+	if credits > warehousecosts[nextwarelvl] then
+		local args = {
+    	[1] = nextwarelvl
+	}
+
+		game:GetService("ReplicatedStorage").Remote.UpgradeWarehouse:InvokeServer(unpack(args))
+	end
+end
+
+autominesection:addToggle("Enable Automine", false, function(value)
 
 	if currentenabled == false and value == true then
 		currentenabled = true
@@ -84,8 +124,10 @@ local autominetoggle = autominesection:addToggle("Enable Automine", false, funct
 	
 					if workspace.Bases:FindFirstChild(dockedbase):FindFirstChild("Model") ~= nil then
 						workspace.Bases:FindFirstChild(dockedbase).Model.DumpOre:InvokeServer()
+						if upgradewarehousewhileautomining == true then checkandupgradewarehouse() end
 					elseif workspace.Bases:FindFirstChild(dockedbase):FindFirstChild("Starbase") then
 						workspace.Bases:FindFirstChild(dockedbase).Starbase.DumpOre:InvokeServer()
+						if upgradewarehousewhileautomining == true then checkandupgradewarehouse() end
 					else
 					    currentenabled = false
                         maingui:Notify("Error!", "Cannot find a starbase to dump at. Please dock at either Mega Base or a Starbase")
@@ -99,7 +141,7 @@ local autominetoggle = autominesection:addToggle("Enable Automine", false, funct
 	end
 end)
 
-local oredropdown = autominesection:addDropdown("Ore", {
+ autominesection:addDropdown("Ore", {
 	"Silicate Ore",
 	"Carbon Ore",
 	"Iridium Ore",
@@ -109,6 +151,14 @@ local oredropdown = autominesection:addDropdown("Ore", {
 	"Quantium Ore"
 }, function(value)
 ore = tostring(value)
+end)
+
+autominesection:addToggle("Upgrade Warehouse while Automining", false, function(val)
+	if val == true then
+		upgradewarehousewhileautomining = true
+	else
+		upgradewarehousewhileautomining = false
+	end
 end)
 
 -- autobuild page
@@ -185,29 +235,6 @@ local allships = {
 	"Stormbringer",
 	"Rhino",
 	"Swarmer"
-}
-
-local warehousecosts = {
-	[2] = 2000,
-	[3] = 4000,
-	[4] = 6000,
-	[5] = 8000,
-	[6] = 10000,
-	[7] = 12000,
-	[8] = 14000,
-	[9] = 16000,
-	[10] = 18000,
-	[11] = 20000,
-	[12] = 22000,
-	[13] = 24000,
-	[14] = 26000,
-	[15] = 28000,
-	[16] = 30000,
-	[17] = 32000,
-	[18] = 35000,
-	[19] = 40000,
-	[20] = 50000,
-	[21] = 60000
 }
 
 local materialspace = {
