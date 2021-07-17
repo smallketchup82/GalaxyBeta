@@ -466,151 +466,126 @@ end)
 
 local espsec = combatpage:addSection("ESP")
 
-local shipespenabled = true
+local shipespenabled = false
+local espcolor = Color3.new(255,255,255)
+local shiplistener1
 
-espsec:addToggle("Ship ESP", false, function(val)
+espsec:addToggle("Ship ESP (BUGGY)", false, function(val)
 	local team = game.Players.LocalPlayer.Team
 	local ships = game.workspace.Ships
 
 	if val == true then 
-
 		if shipespenabled == false then shipespenabled = true end
+		local function shipesp()
+			for _, shipteam in ipairs(ships:GetChildren()) do
+		
+				for _, ship in ipairs(shipteam:GetChildren()) do 
+					if not ship.CenterPoint:FindFirstChild("ESP") then 
+					local BillboardGui = Instance.new("BillboardGui", ship.CenterPoint)
+					local TextLabel = Instance.new("TextLabel", BillboardGui)
+						BillboardGui.Adornee = ship.CenterPoint
+						BillboardGui.Name = "ESP"
+						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+						BillboardGui.AlwaysOnTop = true
+						TextLabel.BackgroundTransparency = 1
+						TextLabel.Position = UDim2.new(0, 0, 0, -50)
+						TextLabel.Size = UDim2.new(0, 100, 0, 100)
+						TextLabel.Font = Enum.Font.SourceSansSemibold
+						TextLabel.TextSize = 20
+						TextLabel.TextColor3 = Color3.new(1, 1, 1)
+						TextLabel.TextStrokeTransparency = 0
+						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+						TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
+						TextLabel.ZIndex = 10
+					
+						game:GetService("RunService").RenderStepped:Connect(function()
+							TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
+						end)
+					end
+				
+				if ship:FindFirstChild("ShipParts") then 
+					for _, part in ipairs(ship["ShipParts"]:GetDescendants()) do
+				   if not part:IsA("BasePart") then continue end
+				   if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+					
+					local a = Instance.new("BoxHandleAdornment")
+						a.Name = part.Name:lower().."_ESP"
+						a.Parent = part
+						a.Adornee = part
+						a.AlwaysOnTop = true
+						a.ZIndex = 0
+						a.Size = part.Size
+						a.Transparency = 0.3
+						a.Color3 = espcolor
+					end
+					return
+				else
+				
+				for _, part in ipairs(ship["Ship Parts"]:GetDescendants()) do
+				   if not part:IsA("BasePart") then continue end
+				   if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+				
+					local a = Instance.new("BoxHandleAdornment")
+						a.Name = part.Name:lower().."_ESP"
+						a.Parent = part
+						a.Adornee = part
+						a.AlwaysOnTop = true
+						a.ZIndex = 0
+						a.Size = part.Size
+						a.Transparency = 0.3
+						a.Color3 = espcolor
+				end
+				end
+				end
+			end
+		end
+
+		shipesp()
+
+		print("esp enabled: " .. tostring(shipespenabled))
+		shiplistener1 = ships.ChildAdded:Connect(function(shipteam)
+			local listener2 = shipteam.ChildAdded:Connect(function(ship)
+				print("esp enabled: " .. tostring(shipespenabled))
+				if shipespenabled == false and listener2 then listener2:Disconnect() return end
+			
+		    	if ship.Parent == "Alien" then return end
+		    	wait(5)
+				shipesp()
+		    end)
+		end)
+	else -- if off
+
+		if shiplistener1 then shiplistener1:Disconnect() end
+		shipespenabled = false
 
 		for _, shipteam in ipairs(ships:GetChildren()) do
 		
 		    for _, ship in ipairs(shipteam:GetChildren()) do 
-		        if not ship.CenterPoint:FindFirstChild("ESP") then 
-		        local BillboardGui = Instance.new("BillboardGui", ship.CenterPoint)
-		        local TextLabel = Instance.new("TextLabel", BillboardGui)
-		            BillboardGui.Adornee = ship.CenterPoint
-		            BillboardGui.Name = "ESP"
-		            BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-		            BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-		            BillboardGui.AlwaysOnTop = true
-		            TextLabel.BackgroundTransparency = 1
-		            TextLabel.Position = UDim2.new(0, 0, 0, -50)
-		            TextLabel.Size = UDim2.new(0, 100, 0, 100)
-		            TextLabel.Font = Enum.Font.SourceSansSemibold
-		            TextLabel.TextSize = 20
-		            TextLabel.TextColor3 = Color3.new(1, 1, 1)
-		            TextLabel.TextStrokeTransparency = 0
-		            TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-		            TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
-		            TextLabel.ZIndex = 10
-				
-		            game:GetService("RunService").RenderStepped:Connect(function()
-		                TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
-		            end)
+		        if ship.CenterPoint:FindFirstChild("ESP") then 
+					ship.CenterPoint:FindFirstChild("ESP"):Destroy()
 		        end
 			
 		    if ship:FindFirstChild("ShipParts") then 
 		        for _, part in ipairs(ship["ShipParts"]:GetDescendants()) do
 		       if not part:IsA("BasePart") then continue end
 		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
-				
-		        local a = Instance.new("BoxHandleAdornment")
-		            a.Name = part.Name:lower().."_ESP"
-		            a.Parent = part
-		            a.Adornee = part
-		            a.AlwaysOnTop = true
-		            a.ZIndex = 0
-		            a.Size = part.Size
-		            a.Transparency = 0.3
-		            a.Color = BrickColor.new("White")
-		        end
-		        return
+				end
 		    else
 			
 		    for _, part in ipairs(ship["Ship Parts"]:GetDescendants()) do
 		       if not part:IsA("BasePart") then continue end
 		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
-			
-		        local a = Instance.new("BoxHandleAdornment")
-		            a.Name = part.Name:lower().."_ESP"
-		            a.Parent = part
-		            a.Adornee = part
-		            a.AlwaysOnTop = true
-		            a.ZIndex = 0
-		            a.Size = part.Size
-		            a.Transparency = 0.3
-		            a.Color = BrickColor.new("White")
 		    end
 		    end
 		    end
 		end
-
-		local listener1 = ships.ChildAdded:Connect(function(shipteam)
-		    local listener2 = shipteam.ChildAdded:Connect(function(ship)
-			
-		    if ship.Parent == "Alien" then return end
-			
-		    wait(5)
-			
-		        if not ship.CenterPoint:FindFirstChild("ESP") then
-		            local BillboardGui = Instance.new("BillboardGui", ship.CenterPoint)
-		            local TextLabel = Instance.new("TextLabel", BillboardGui)
-		                BillboardGui.Adornee = ship.CenterPoint
-		                BillboardGui.Name = "ESP"
-		                BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-		                BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-		                BillboardGui.AlwaysOnTop = true
-		                TextLabel.BackgroundTransparency = 1
-		                TextLabel.Position = UDim2.new(0, 0, 0, -50)
-		                TextLabel.Size = UDim2.new(0, 100, 0, 100)
-		                TextLabel.Font = Enum.Font.SourceSansSemibold
-		                TextLabel.TextSize = 20
-		                TextLabel.TextColor3 = Color3.new(1, 1, 1)
-		                TextLabel.TextStrokeTransparency = 0
-		                TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-		                TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
-		                TextLabel.ZIndex = 10
-				
-		            game:GetService("RunService").RenderStepped:Connect(function()
-		                TextLabel.Text = 'Name: ' .. ship.Name .. " | Owner: " .. tostring(ship.Owner.Value) .. " | Shield: " .. math.floor(ship.Shield.Value) .. " | Hull: " .. math.floor(ship.Hull.Value)
-		            end)
-		        end
-			
-		    if ship:FindFirstChild("ShipParts") then
-		        for _, part in ipairs(ship["ShipParts"]:GetDescendants()) do
-		      if not part:IsA("BasePart") then continue end
-		      if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
-				
-		        local a = Instance.new("BoxHandleAdornment")
-		            a.Name = part.Name:lower().."_ESP"
-		            a.Parent = part
-		            a.Adornee = part
-		            a.AlwaysOnTop = true
-		            a.ZIndex = 0
-		            a.Size = part.Size
-		            a.Transparency = 0.3
-		            a.Color = BrickColor.new("White")
-		        end
-		        return
-		    else
-		    for _, part in ipairs(ship["Ship Parts"]:GetDescendants()) do
-		      if not part:IsA("BasePart") then continue end
-		      if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
-			
-		        local a = Instance.new("BoxHandleAdornment")
-		            a.Name = part.Name:lower().."_ESP"
-		            a.Parent = part
-		            a.Adornee = part
-		            a.AlwaysOnTop = true
-		            a.ZIndex = 0
-		            a.Size = part.Size
-		            a.Transparency = 0.3
-		            a.Color = BrickColor.new("White")
-		    end
-		    end
-		
-		    end)
-		end)
-	else
-		maingui:Notify("Disabling ESP is coming soon", "For now rejoin the game.")
 	end
 end)
 
 local baseesptoggled = true
+
+local baselistener
 
 espsec:addToggle("Base ESP", false, function(val)
 
@@ -667,7 +642,7 @@ espsec:addToggle("Base ESP", false, function(val)
 		    end
 		end
 
-		local listener = bases.ChildAdded:Connect(function(base)
+		baselistener = bases.ChildAdded:Connect(function(base)
 		
 		    wait(5)
 		
@@ -718,8 +693,68 @@ espsec:addToggle("Base ESP", false, function(val)
 		    end
 		end)
 	else
-		maingui:Notify("Disabling ESP is coming soon", "For now rejoin the game.")
+		baselistener:Disconnect()
+
+		for _, base in ipairs(bases:GetChildren()) do
+		    if base.Name == "Mega Base" then continue end
+		
+		    if base.Starbase.CenterPoint:FindFirstChild("ESP") then 
+				base.Starbase.CenterPoint:FindFirstChild("ESP"):Destroy()
+		    end
+		
+		    for _, part in ipairs(base.Starbase["Base Parts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then part:FindFirstChildWhichIsA("BoxHandleAdornment"):Destroy() end
+		    end
+		end
 	end
+end)
+
+espsec:addColorPicker("ESP Color", espcolor, function(val)
+
+	espcolor = val
+
+	local team = game.Players.LocalPlayer.Team
+	local ships = game.workspace.Ships
+
+		for _, shipteam in ipairs(ships:GetChildren()) do
+
+			for _, ship in ipairs(shipteam:GetChildren()) do 
+		    if ship:FindFirstChild("ShipParts") then 
+		    	for _, part in ipairs(ship["ShipParts"]:GetDescendants()) do
+		       		if not part:IsA("BasePart") then continue end
+
+		       		if part:FindFirstChildWhichIsA("BoxHandleAdornment") then
+						part:FindFirstChildWhichIsA("BoxHandleAdornment").Color3 = espcolor
+			   		end
+
+				end
+		    else
+			
+		    for _, part in ipairs(ship["Ship Parts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+
+			   if part:FindFirstChildWhichIsA("BoxHandleAdornment") then
+				part:FindFirstChildWhichIsA("BoxHandleAdornment").Color3 = espcolor
+			   end
+
+		    end
+		    end
+		end
+		end
+
+		for _, base in ipairs(bases:GetChildren()) do
+		    if base.Name == "Mega Base" then continue end
+		    if ignoreteam == true and base.Name == tostring(team) then continue end
+		
+		    for _, part in ipairs(base.Starbase["Base Parts"]:GetDescendants()) do
+		       if not part:IsA("BasePart") then continue end
+		       if part:FindFirstChildWhichIsA("BoxHandleAdornment") then
+					part:FindFirstChildWhichIsA("BoxHandleAdornment").Color3 = espcolor
+				end
+		end
+	end
+
 end)
 
 -- progression page
