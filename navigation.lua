@@ -6,6 +6,7 @@ local MainUI = UILibrary.Load("Roblox Galaxy Beta Utilities - Navigation")
 
 local teleportpage = MainUI.AddPage("Teleports", true)
 local dockpage = MainUI.AddPage("Dock", true)
+local spawnpage = MainUI.AddPage("Spawn", true)
 
 local bases = game.Workspace.Bases
 local ts = game:GetService("TweenService")
@@ -99,4 +100,112 @@ end
 bases.DescendantAdded:Connect(handlebase)
 for _, base in ipairs(bases:GetDescendants()) do
 	handlebase(base)
+end
+
+-- spawn page
+
+local allships = {
+	"Tango",
+	"Harvester",
+	"Advanced Miner",
+	"Industrial Miner",
+    "Wyrm",
+	"Tempura",
+	"Argonaut",
+	"Prospector",
+	"Hercules",
+	"Prepravca",
+	"Starblade",
+	"Dropship",
+	"Avenger",
+	"Osprey",
+	"Raven",
+	"Python",
+	"Archangel",
+	"Viper",
+	"Abyss",
+	"Corvid",
+	"Phantom",
+	"Centurion",
+	"Zero",
+	"Scimitar",
+	"Cobra",
+	"Sabre Tooth",
+	"Xenon",
+	"Gunslinger",
+	"Reaver",
+	"Gideon",
+	"Orion",
+	"Invictus",
+	"Spectre",
+	"Nova",
+	"Sixfold",
+	"Bastion",
+	"Dire Wolf",
+	"Aeaphiel",
+	"Radiance",
+	"Hecate",
+	"Razor Wing",
+	"Belvat",
+	"Black Flare",
+	"Grievion",
+	"Sovereign",
+	"Hasatan",
+	"Hawklight",
+	"Aegis",
+	"Ampharos",
+	"Warlock",
+	"Archeon",
+	"Sagittarius",
+	"Naglfar",
+	"Ridgebreaker",
+	"Cyclops",
+	"Leviathan",
+	"Apocalypse",
+	"Nemesis",
+	"Tempest",
+	"Tennhausen",
+	"Zeus",
+	"Hevnetier",
+	"Revelation",
+	"Stormbringer",
+	"Rhino",
+	"Swarmer"
+}
+
+local shiptospawn
+
+spawnpage.AddDropdown("Ship", allships, function(val)
+	shiptospawn = val
+end)
+
+local function handlespawnbase(base)
+
+	if base.Parent ~= bases then return end
+
+	local removebasebutton = spawnpage.AddButton(base.Name, function()
+		if not shiptospawn then print("Please select a ship to spawn!") end
+
+		local args = {
+    		[1] = shiptospawn
+		}
+		
+		base:FindFirstChildWhichIsA("Model").SpawnShip:InvokeServer(unpack(args))
+	end)
+
+	local listener1 = base.Parent.ChildRemoved:Connect(function()
+		if base.Parent then return end
+		removebasebutton()
+	end)
+	local listener2; listener2 = base:GetPropertyChangedSignal("Name"):Connect(function()
+		listener1:Disconnect()
+		listener2:Disconnect()
+		removebasebutton()
+		handlebase(base)
+	end)
+end
+
+bases.DescendantAdded:Connect(handlespawnbase)
+for _, base in ipairs(bases:GetChildren()) do
+	handlespawnbase(base)
 end
