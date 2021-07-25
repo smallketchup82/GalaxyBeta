@@ -1,6 +1,6 @@
 if game.PlaceId ~= 263135585 then print("run this in galaxy beta you monkey 🐒") return end
 if not game:IsLoaded() then
-	print("Waiting for game to load!")
+	print("Galaxy Beta Utilities: Waiting for game to load")
 	game.Loaded:Wait()
 end
 print("Running Galaxy Beta Utilities!")
